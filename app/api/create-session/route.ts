@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic';
+
 import { WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = 'nodejs';
