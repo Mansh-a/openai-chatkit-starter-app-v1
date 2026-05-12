@@ -1,7 +1,8 @@
+export const dynamic = 'force-dynamic';
 import { WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+
 interface CreateSessionRequestBody {
   workflow?: { id?: string | null } | null;
   scope?: { user_id?: string | null } | null;
