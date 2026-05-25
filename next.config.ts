@@ -1,12 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...(config.resolve.alias ?? {}),
-    };
-    return config;
-  },
+  // Tells Next.js 16 to proceed with the build
+  turbopack: {}, 
 };
 
 export default nextConfig;
