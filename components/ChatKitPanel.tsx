@@ -263,21 +263,6 @@ export function ChatKitPanel({
     api: { getClientSecret },
     theme: {
       colorScheme: theme,
-      title: "Crocadilo Support",
-      showHeader: true,
-      hasLayout: true,
-      color: {
-        grayscale: {
-          hue: 145, 
-          tint: 5,
-          shade: -4,
-        },
-        accent: {
-          primary: "#0B251E", 
-          level: 1,
-        },
-      },
-      radius: "soft", // TypeScript compilation error fully fixed here
     },
     startScreen: {
       greeting: GREETING,
@@ -354,6 +339,19 @@ export function ChatKitPanel({
 
   return (
     <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
+      {/* Dynamic CSS Injection to explicitly enforce Crocadilo styling securely on the shadow DOM elements */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        openai-chatkit {
+          --oc-color-grayscale-hue: 145 !important;
+          --oc-color-grayscale-tint: 5 !important;
+          --oc-color-accent-primary: #0B251E !important;
+          background-color: #BDDEC8 !important;
+        }
+        .chatkit-container, [class*="ChatKit"] {
+          background-color: #BDDEC8 !important;
+        }
+      `}} />
+
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
