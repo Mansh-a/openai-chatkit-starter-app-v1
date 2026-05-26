@@ -42,7 +42,7 @@ const createInitialErrors = (): ErrorState => ({
   retryable: false,
 });
 
-// Helper function to parse error text from response
+// Helper function to parse error text from API responses safely
 function extractErrorDetail(data: Record<string, any>, statusText: string): string {
   if (data?.error?.message) return data.error.message;
   if (typeof data?.error === "string") return data.error;
@@ -297,7 +297,6 @@ export function ChatKitPanel({
       feedback: false,
     },
     onClientTool: async (invocation) => {
-      // Completed placeholder implementation for client tools
       if (invocation.name === "save_fact") {
         const params = invocation.params as any;
         if (onWidgetAction) {
@@ -317,21 +316,23 @@ export function ChatKitPanel({
   if (activeError) {
     return (
       <ErrorOverlay 
-        message={activeError} 
+        error={activeError} 
         onRetry={handleResetChat} 
       />
     );
   }
 
-  // Render ChatKit component
+  // Render ChatKit component layout
   return (
     <div key={widgetInstanceKey} className="w-full h-full relative">
       {isInitializingSession && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
-          <p>Initializing chat session...</p>
+        <div className="absolute inset-0 flex items-center justify-center bg-white z-10 dark:bg-slate-900">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+            Initializing chat session...
+          </p>
         </div>
       )}
-      <ChatKit config={chatkit} />
+      <ChatKit {...chatkit} />
     </div>
   );
 }
