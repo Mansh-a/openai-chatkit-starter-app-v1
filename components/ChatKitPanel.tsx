@@ -193,7 +193,6 @@ export function ChatKitPanel({
           body: JSON.stringify({
             workflow: { id: WORKFLOW_ID },
             chatkit_configuration: {
-              // enable attachments
               file_upload: {
                 enabled: true,
               },
@@ -265,7 +264,22 @@ export function ChatKitPanel({
     api: { getClientSecret },
     theme: {
       colorScheme: theme,
-      ...getThemeConfig(theme),
+      // Injecting Crocadilo brand styles right into OpenAI's native config hooks
+      title: "Crocadilo Support",
+      showHeader: true,
+      hasLayout: true,
+      color: {
+        grayscale: {
+          hue: 145, // Transforms layout spacing completely into Sage Mint Green
+          tint: 5,
+          shade: -4,
+        },
+        accent: {
+          primary: "#0B251E", // Accurate Crocadilo Dark Emerald for buttons/icons
+          level: 1,
+        },
+      },
+      radius: "medium",
     },
     startScreen: {
       greeting: GREETING,
@@ -274,7 +288,6 @@ export function ChatKitPanel({
     composer: {
       placeholder: PLACEHOLDER_INPUT,
       attachments: {
-        // Enable attachments
         enabled: true,
       },
     },
@@ -324,8 +337,6 @@ export function ChatKitPanel({
       processedFacts.current.clear();
     },
     onError: ({ error }: { error: unknown }) => {
-      // Note that Chatkit UI handles errors for your users.
-      // Thus, your app code doesn't need to display errors on UI.
       console.error("ChatKit error", error);
     },
   });
@@ -344,7 +355,8 @@ export function ChatKitPanel({
   }
 
   return (
-    <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+    /* FIXED: Swapped 'bg-white' and 'h-[90vh]' for full container coverage and matched the sage green styling background */
+    <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
