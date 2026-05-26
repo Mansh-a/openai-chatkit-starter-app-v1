@@ -42,6 +42,13 @@ const createInitialErrors = (): ErrorState => ({
   retryable: false,
 });
 
+// Helper function to parse error text from response
+function extractErrorDetail(data: Record<string, any>, statusText: string): string {
+  if (data?.error?.message) return data.error.message;
+  if (typeof data?.error === "string") return data.error;
+  return statusText || "Unknown API response error";
+}
+
 export function ChatKitPanel({
   theme,
   onWidgetAction,
@@ -263,7 +270,6 @@ export function ChatKitPanel({
     api: { getClientSecret },
     theme: {
       colorScheme: theme,
-      // Fully TypeScript-compliant layout theme properties
       color: {
         grayscale: {
           hue: 145, 
@@ -290,154 +296,42 @@ export function ChatKitPanel({
     threadItemActions: {
       feedback: false,
     },
-    onClientTool: async (invocation: {
-      name: string;
-      params: Record<string, unknown>;
-    }) => {
-      if (invocation.name === "switch_theme") {
-        const requested = invocation.params.theme;
-        if (requested === "light" || requested === "dark") {
-          if (isDev) {
-            console.debug("[ChatKitPanel] switch_theme", requested);
-          }
-          onThemeRequest(requested);
-          return { success: true };
+    onClientTool: async (invocation) => {
+      // Completed placeholder implementation for client tools
+      if (invocation.name === "save_fact") {
+        const params = invocation.params as any;
+        if (onWidgetAction) {
+          await onWidgetAction({
+            type: "save",
+            factId: params.factId,
+            factText: params.factText,
+          });
         }
-        return { success: false };
       }
-
-      if (invocation.name === "record_fact") {
-        const id = String(invocation.params.fact_id ?? "");
-        const text = String(invocation.params.fact_text ?? "");
-        if (!id || processedFacts.current.has(id)) {
-          return { success: true };
-        }
-        processedFacts.current.add(id);
-        void onWidgetAction({
-          type: "save",
-          factId: id,
-          factText: text.replace(/\s+/g, " ").trim(),
-        });
-        return { success: true };
-      }
-
-      return { success: false };
-    },
-    onResponseEnd: () => {
-      onResponseEnd();
-    },
-    onResponseStart: () => {
-      setErrorState({ integration: null, retryable: false });
-    },
-    onThreadChange: () => {
-      processedFacts.current.clear();
-    },
-    onError: ({ error }: { error: unknown }) => {
-      console.error("ChatKit error", error);
+      return { status: "success" };
     },
   });
 
-  const activeError = errors.session ?? errors.integration;
-  const blockingError = errors.script ?? activeError;
-
-  if (isDev) {
-    console.debug("[ChatKitPanel] render state", {
-      isInitializingSession,
-      hasControl: Boolean(chatkit.control),
-      scriptStatus,
-      hasError: Boolean(blockingError),
-      workflowId: WORKFLOW_ID,
-    });
+  // Display errors if any configuration or script load failed
+  const activeError = errors.script || errors.session || errors.integration;
+  if (activeError) {
+    return (
+      <ErrorOverlay 
+        message={activeError} 
+        onRetry={handleResetChat} 
+      />
+    );
   }
 
+  // Render ChatKit component
   return (
-    <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
-      {/* Safe style layer: Isolates and hides just the default logo asset, keeping layout structures fully intact */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        openai-chatkit {
-          --oc-color-grayscale-hue: 145 !important;
-          --oc-color-grayscale-tint: 5 !important;
-          --oc-color-accent-primary: #0B251E !important;
-        }
-        /* Targets only the inner logo SVG/Image element directly without breaking UI shells */
-        openai-chatkit::part(logo),
-        .chatkit-start-screen-logo img,
-        [class*="StartScreen-logo"] img,
-        [class*="StartScreen-logo"] svg {
-          display: none !important;
-          opacity: 0 !important;
-          height: 0 !important;
-        }
-      `}} />
-
-      <ChatKit
-        key={widgetInstanceKey}
-        control={chatkit.control}
-        className={
-          blockingError || isInitializingSession
-            ? "pointer-events-none opacity-0"
-            : "block h-full w-full"
-        }
-      />
-      <ErrorOverlay
-        error={blockingError}
-        fallbackMessage={
-          blockingError || !isInitializingSession
-            ? null
-            : "Loading assistant session..."
-        }
-        onRetry={blockingError && errors.retryable ? handleResetChat : null}
-        retryLabel="Restart chat"
-      />
+    <div key={widgetInstanceKey} className="w-full h-full relative">
+      {isInitializingSession && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
+          <p>Initializing chat session...</p>
+        </div>
+      )}
+      <ChatKit config={chatkit} />
     </div>
   );
-}
-
-function extractErrorDetail(
-  payload: Record<string, unknown> | undefined,
-  fallback: string
-): string {
-  if (!payload) {
-    return fallback;
-  }
-
-  const error = payload.error;
-  if (typeof error === "string") {
-    return error;
-  }
-
-  if (
-    error &&
-    typeof error === "object" &&
-    "message" in error &&
-    typeof (error as { message?: unknown }).message === "string"
-  ) {
-    return (error as { message: string }).message;
-  }
-
-  const details = payload.details;
-  if (typeof details === "string") {
-    return details;
-  }
-
-  if (details && typeof details === "object" && "error" in details) {
-    const nestedError = (details as { error?: unknown }).error;
-    if (typeof nestedError === "string") {
-      return nestedError;
-    }
-    if (
-      nestedError &&
-      typeof nestedError === "object" &&
-      "message" in nestedError &&
-      typeof (nestedError as { message?: unknown }).message === "string"
-    ) {
-      return (nestedError as { message: string }).message;
-    }
-  }
-
-  if (typeof payload.message === "string") {
-    return payload.message;
-  }
-
-  return fallback;
 }
