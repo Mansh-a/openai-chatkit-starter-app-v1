@@ -18,18 +18,21 @@ export const PLACEHOLDER_INPUT = "Ask anything...";
 export const GREETING = "How can I help you today?";
 
 export const getThemeConfig = (theme: ColorScheme): ThemeOption => ({
+  // Native OpenAI ChatKit Configurations
+  title: "Crocadilo Support",
+  
   color: {
+    // Hue 145 locks the background color canvas theme entirely to Sage Mint Green
     grayscale: {
-      hue: 220,
-      tint: 6,
+      hue: 145, 
+      tint: 5,
       shade: theme === "dark" ? -1 : -4,
     },
+    // Changes primary interaction buttons & highlights to Crocadilo Dark Emerald
     accent: {
-      primary: theme === "dark" ? "#f1f5f9" : "#0f172a",
+      primary: "#0B251E", 
       level: 1,
     },
   },
-  radius: "round",
-  // Add other theme options here
-  // chatkit.studio/playground to explore config options
+  radius: "medium", 
 });
