@@ -339,13 +339,19 @@ export function ChatKitPanel({
 
   return (
     <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
-      {/* Dynamic CSS Injection to explicitly enforce Crocadilo styling securely on the shadow DOM elements */}
+      {/* Explicit style target overrides injected natively to style the custom web-component layer */}
       <style dangerouslySetInnerHTML={{ __html: `
         openai-chatkit {
           --oc-color-grayscale-hue: 145 !important;
           --oc-color-grayscale-tint: 5 !important;
           --oc-color-accent-primary: #0B251E !important;
           background-color: #BDDEC8 !important;
+        }
+        /* Target and hide default template logo icon blockages cleanly */
+        [class*="StartScreen-logo"], 
+        .chatkit-start-screen-logo,
+        openai-chatkit::shadow [class*="logo"] {
+          display: none !important;
         }
         .chatkit-container, [class*="ChatKit"] {
           background-color: #BDDEC8 !important;
