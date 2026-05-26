@@ -8,7 +8,6 @@ import {
   GREETING,
   CREATE_SESSION_ENDPOINT,
   WORKFLOW_ID,
-  getThemeConfig,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
 import type { ColorScheme } from "@/hooks/useColorScheme";
@@ -264,22 +263,21 @@ export function ChatKitPanel({
     api: { getClientSecret },
     theme: {
       colorScheme: theme,
-      // Injecting Crocadilo brand styles right into OpenAI's native config hooks
       title: "Crocadilo Support",
       showHeader: true,
       hasLayout: true,
       color: {
         grayscale: {
-          hue: 145, // Transforms layout spacing completely into Sage Mint Green
+          hue: 145, 
           tint: 5,
           shade: -4,
         },
         accent: {
-          primary: "#0B251E", // Accurate Crocadilo Dark Emerald for buttons/icons
+          primary: "#0B251E", 
           level: 1,
         },
       },
-      radius: "medium",
+      radius: "soft", // TypeScript compilation error fully fixed here
     },
     startScreen: {
       greeting: GREETING,
@@ -355,7 +353,6 @@ export function ChatKitPanel({
   }
 
   return (
-    /* FIXED: Swapped 'bg-white' and 'h-[90vh]' for full container coverage and matched the sage green styling background */
     <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
       <ChatKit
         key={widgetInstanceKey}
