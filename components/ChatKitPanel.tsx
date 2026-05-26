@@ -263,9 +263,7 @@ export function ChatKitPanel({
     api: { getClientSecret },
     theme: {
       colorScheme: theme,
-      // RESTORED: These are required to physically render the UI components
-      showHeader: true,
-      hasLayout: true,
+      // Fully TypeScript-compliant layout theme properties
       color: {
         grayscale: {
           hue: 145, 
@@ -354,19 +352,21 @@ export function ChatKitPanel({
 
   return (
     <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
-      {/* Safer CSS rules: Makes the component transparent to show the green background, and cleanly targets just image/svg files to hide the default logo */}
+      {/* Safe style layer: Isolates and hides just the default logo asset, keeping layout structures fully intact */}
       <style dangerouslySetInnerHTML={{ __html: `
         openai-chatkit {
-          background: transparent !important;
-          --oc-bg-default: transparent !important;
-          --oc-bg-panel: transparent !important;
+          --oc-color-grayscale-hue: 145 !important;
+          --oc-color-grayscale-tint: 5 !important;
+          --oc-color-accent-primary: #0B251E !important;
         }
-        /* Safely hides the default logo without destroying layout wrappers */
-        [class*="StartScreen"] img,
-        [class*="StartScreen"] svg,
-        openai-chatkit::part(logo) {
+        /* Targets only the inner logo SVG/Image element directly without breaking UI shells */
+        openai-chatkit::part(logo),
+        .chatkit-start-screen-logo img,
+        [class*="StartScreen-logo"] img,
+        [class*="StartScreen-logo"] svg {
           display: none !important;
           opacity: 0 !important;
+          height: 0 !important;
         }
       `}} />
 
