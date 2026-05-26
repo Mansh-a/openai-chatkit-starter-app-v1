@@ -263,6 +263,19 @@ export function ChatKitPanel({
     api: { getClientSecret },
     theme: {
       colorScheme: theme,
+      // Fully compliant parameters matching the expected types precisely
+      color: {
+        grayscale: {
+          hue: 145, 
+          tint: 5,
+          shade: -4,
+        },
+        accent: {
+          primary: "#0B251E", 
+          level: 1,
+        },
+      },
+      radius: "soft"
     },
     startScreen: {
       greeting: GREETING,
@@ -339,7 +352,7 @@ export function ChatKitPanel({
 
   return (
     <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
-      {/* Explicit style target overrides injected natively to style the custom web-component layer */}
+      {/* Target styles directly inside the layout wrapper without hiding entire functional child sections */}
       <style dangerouslySetInnerHTML={{ __html: `
         openai-chatkit {
           --oc-color-grayscale-hue: 145 !important;
@@ -347,11 +360,15 @@ export function ChatKitPanel({
           --oc-color-accent-primary: #0B251E !important;
           background-color: #BDDEC8 !important;
         }
-        /* Target and hide default template logo icon blockages cleanly */
-        [class*="StartScreen-logo"], 
+        /* Target and isolate the logo placeholder layout section specifically without blocking main workspace nodes */
+        openai-chatkit::shadow .chatkit-start-screen-logo,
+        openai-chatkit::shadow [class*="StartScreen-logo"],
         .chatkit-start-screen-logo,
-        openai-chatkit::shadow [class*="logo"] {
+        [class*="StartScreen-logo"] {
           display: none !important;
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
         .chatkit-container, [class*="ChatKit"] {
           background-color: #BDDEC8 !important;
