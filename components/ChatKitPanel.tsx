@@ -263,7 +263,9 @@ export function ChatKitPanel({
     api: { getClientSecret },
     theme: {
       colorScheme: theme,
-      // Fully compliant parameters matching the expected types precisely
+      // RESTORED: These are required to physically render the UI components
+      showHeader: true,
+      hasLayout: true,
       color: {
         grayscale: {
           hue: 145, 
@@ -352,26 +354,19 @@ export function ChatKitPanel({
 
   return (
     <div className="relative flex h-full w-full rounded-2xl flex-col overflow-hidden bg-[#BDDEC8] shadow-sm transition-colors">
-      {/* Target styles directly inside the layout wrapper without hiding entire functional child sections */}
+      {/* Safer CSS rules: Makes the component transparent to show the green background, and cleanly targets just image/svg files to hide the default logo */}
       <style dangerouslySetInnerHTML={{ __html: `
         openai-chatkit {
-          --oc-color-grayscale-hue: 145 !important;
-          --oc-color-grayscale-tint: 5 !important;
-          --oc-color-accent-primary: #0B251E !important;
-          background-color: #BDDEC8 !important;
+          background: transparent !important;
+          --oc-bg-default: transparent !important;
+          --oc-bg-panel: transparent !important;
         }
-        /* Target and isolate the logo placeholder layout section specifically without blocking main workspace nodes */
-        openai-chatkit::shadow .chatkit-start-screen-logo,
-        openai-chatkit::shadow [class*="StartScreen-logo"],
-        .chatkit-start-screen-logo,
-        [class*="StartScreen-logo"] {
+        /* Safely hides the default logo without destroying layout wrappers */
+        [class*="StartScreen"] img,
+        [class*="StartScreen"] svg,
+        openai-chatkit::part(logo) {
           display: none !important;
-          height: 0 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-        }
-        .chatkit-container, [class*="ChatKit"] {
-          background-color: #BDDEC8 !important;
+          opacity: 0 !important;
         }
       `}} />
 
