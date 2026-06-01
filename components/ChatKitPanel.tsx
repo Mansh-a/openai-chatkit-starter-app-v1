@@ -190,7 +190,8 @@ export function ChatKitPanel({
 
       const detail = (event as CustomEvent<unknown>)?.detail ?? "unknown error";
 
-      setErrorState({ script: Error: ${detail}, retryable: false });
+      setErrorState({ script: `Error: ${detail}`, retryable: false });
+
 
       setIsInitializingSession(false);
 
